@@ -14,7 +14,9 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        $books = Book::all();
+
+        return view('index', compact('books'));
     }
 
     /**
@@ -65,7 +67,9 @@ class BookController extends Controller
      */
     public function edit($id)
     {
-        //
+        $book = Book::findOrFail($id);
+
+        return view('edit', compact('book'));
     }
 
     /**
@@ -77,7 +81,15 @@ class BookController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'book_name' => 'required|max:255',
+            'isbn_no' => 'required|alpha_num',
+            'book_price' => 'required|numeric',
+        ]);
+
+        Book::where($id)->update($validatedData);
+
+        return redirect('/books')->with('success', 'Book is Successfully Updated!');
     }
 
     /**
@@ -88,6 +100,9 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $book = Book::findOrFail($id);
+        $book->delete();
+
+        return redirect('/books')->with('success', 'Book is Successfully Deleted!');
     }
 }
